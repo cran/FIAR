@@ -1,132 +1,157 @@
 partGranger <-
-function(data,nx=1,ny=1,order=1,boot=FALSE,prob=TRUE,bs=100,p=.05){
+function(data,nx=1,ny=1,order=1,perm=FALSE,prob=TRUE,bs=100){
 data <- as.matrix(data)
 X <- t(data)
 X <- X-rowMeans(X)
 data <- t(X)
-  if (boot == FALSE){
+
+  if (perm == FALSE){
      x <- as.matrix(data[,1:nx])
 
-     y <- as.matrix(data[,-(1:nx)][,1:ny])
+     y <- as.matrix(data[,-(1:nx)])[,1:ny]
 
-     z <- as.matrix(data[,-(1:(nx+ny))])
+       if (sum(as.matrix(data[,-(1:(nx+ny))]))!=0)
+         {
+           z <- as.matrix(data[,-(1:(nx+ny))])
+           nz <- ncol(z)
 
-     nz <- ncol(z)
+# Compute F2
 
-# Compute F1
+                x  <-  embed(x,order+1)
+                x2 <- as.matrix(x[,1:nx])
+                xlag <- as.matrix(x[,-(1:nx)])
 
-     x  <-  embed(x,order+1)
-     x2 <- as.matrix(x[,1:nx])
-     xlag <- as.matrix(x[,-(1:nx)])
+                y  <-  embed(y,order+1)
+                y2 <- as.matrix(y[,1:ny])
+                ylag <- as.matrix(y[,-(1:ny)])
 
-     y  <-  embed(y,order+1)
-     y2 <- as.matrix(y[,1:ny])
-     ylag <- as.matrix(y[,-(1:ny)])
+                z  <-  embed(z,order+1)
+                z2 <- as.matrix(z[,1:nz])
+                zlag <- as.matrix(z[,-(1:nz)])
 
-     z  <-  embed(z,order+1)
-     z2 <- as.matrix(z[,1:nz])
-     zlag <- as.matrix(z[,-(1:nz)])
 
-#   e1 <- cov(y2)-cov(y2,cbind(ylag,zlag,z2))%*%solve(cov(cbind(ylag,zlag,z2)))%*%cov(cbind(ylag,zlag,z2),y2)
-#   e2 <- cov(y2)-cov(y2,cbind(ylag,xlag,zlag,z2))%*%solve(cov(cbind(ylag,xlag,zlag,z2)))%*%cov(cbind(ylag,xlag,zlag,z2),y2)
+	    fitF <-lm(y2~cbind(ylag,zlag,xlag,z2))
+	    fitR <- lm(y2~cbind(ylag,zlag,z2))
+	    SSER <- sum(fitR$res^2)
+	    SSEF <- sum(fitF$res^2)
+            f <- log(SSER/SSEF) 
+	    prb <- anova(fitF,fitR)$Pr[2]
+	    #prb <- 1-pf(exp(F),dfr,df2)
+	    if(prob==TRUE){out <- list()
+	    out$orig <- f
+	    out$prob <- prb}
+	    else{out <- f}
+	    out
+	    }
+		  else{
+		  x  <-  embed(x,order+1)
+		  x2 <- as.matrix(x[,1:nx])
+		  xlag <- as.matrix(x[,-(1:nx)])
 
-#  F <- log(det(e1)/det(e2))
-fitF <-lm(y2~0+cbind(ylag,zlag,xlag,z2))
-fitR <- lm(y2~0+cbind(ylag,zlag,z2))
-SSEF <- sum(fitF$res^2)
-SSER <- sum(fitR$res^2)
-  df1 <- order*nx
-  df2 <- nrow(x2)-order*(nx+ny+nz)-nz
-  #dfr <- nrow(x2)-order*(ny+nz)-nz
-#df2 <- (nrow(data)-order-(ncol(data)*order))
-  f <- ((SSER-SSEF)/df1)/(SSEF/df2)
-#    prb <- 1-pf(exp(F),df1,df2)
-prb <- 1-pf(f,df1,df2)
-       if(prob==TRUE){out <- list()
-         out$orig <- f
-         out$prob <- prb}
-       else{out <- f}
- out
-}
-  else{
-    l <- median(b.star(data,round=TRUE)[,1]) # package {np}
-    out <- tsboot(data,partGranger,R=bs,l=l, sim ='geom',nx=nx,ny=ny,order=order,prob=FALSE) # package {boot}
-    if(quantile(out$t-out$t0,1-p/ncol(data)/2)>out$t0){
-    out$sig=0} else {out$sig=1}
-   out
-}
-# if(boot==TRUE & (nx > 1 | ny > 1)){
-# out <-  " Warning: No bootstrap method available for Multivariate G-causality!! "
-# }
-# if(boot==TRUE & nx == 1 & ny == 1){
+		  y  <-  embed(y,order+1)
+		  y2 <- as.matrix(y[,1:ny])
+		  ylag <- as.matrix(y[,-(1:ny)])
+
+		  fitF <-lm(y2~cbind(ylag,xlag))
+		  fitR <- lm(y2~cbind(ylag))
+		  SSER <- sum(fitR$res^2)
+		  SSEF <- sum(fitF$res^2)
+		  f <- log(SSER/SSEF) 
+			      prb <- anova(fitF,fitR)$Pr[2]
+			      if(prob==TRUE){out <- list()
+			      out$orig <- f
+			      out$prob <- prb}
+			      else{out <- f}
+			      out
+		  }
+                          }
+
+else{
+# if(nx==1 & ny==1){
 # l <- ncol(data)
 # r <- nrow(data)
 # out<-list()
-# out$prob <- matrix(0,l,l)
+# out$prb <- matrix(0,l,l)
 # out$orig <- matrix(0,l,l)
-# PG <- array(0,dim=c(l,l,bs))
+# cg <- array(0,dim=c(l,l,bs))
+# ll <- b.star(data,round=TRUE)[,1]
 # 
 # 
 # for (bss in 1:bs){
-# XX  <- matrix(0,l,nrow(data)) 
-# nwin<- nrow(data)/b
-# inx <- rep(1:nwin,each=b)
-# ct  <-1
-# for (kk in 1:nwin){
-# temp<- sample(nwin)
-# winx<- which(inx==temp[1])
-# XX[,ct:(ct+b-1)]<-data[winx,]
-# ct <- ct + b
-# }
+# XX  <- matrix(0,l,r) 
+#   for (pp in 1:l){
+# 
+#     nwin<- floor(r/ll[pp])
+#     temp<- sample(nwin)
+#     inx <- rep(temp,each=ll[pp])
+#     data_ind <- cbind(inx,data[1:(ll[pp]*nwin),pp])
+#     XX[pp,1:(ll[pp]*nwin)] <- data_ind[order(data_ind[,1]),-1]
+# 
+#                 }
+#   XX <- XX[,1:max(which(apply(XX,2,prod)!=0))]
+# 
+# 
 # for(ii in 1:(l-1)) {
 # for (jj in (ii+1):l){
 # if (bss==1){
-# out$orig[ii,jj]=partGranger(cbind(data[,ii],data[,jj],data[,-c(ii,jj)]),nx=nx,ny=ny,order=order)$orig
-# out$orig[jj,ii]=partGranger(cbind(data[,jj],data[,ii],data[,-c(ii,jj)]),nx=nx,ny=ny,order=order)$orig
+# out$orig[jj,ii]=partGranger(cbind(data[,ii],data[,jj],data[,-c(ii,jj)]),nx=nx,ny=ny,order=order)$orig
+# out$orig[ii,jj]=partGranger(cbind(data[,jj],data[,ii],data[,-c(ii,jj)]),nx=nx,ny=ny,order=order)$orig
 # }
 # 
-# Xi <- rbind(XX[ii,],XX[jj,],XX[-c(ii,jj),])
-# Xir <- Xi[-((nx+1):(nx+ny)),] 
-# Exy<-armorf(t(Xi),nwin,b,order)
-# Ey<-armorf(t(Xir),nwin,b,order)
-# 
-# S11 <- Ey[1:ny,1:ny]
-# S22 <- Ey[(ny+1):ncol(Ey),(ny+1):ncol(Ey)]
-# S12 <- Ey[1:ny,(ny+1):ncol(Ey)]
-# 
-# Sig11 <- Exy[(1:ny),(1:ny)]
-# Sig22 <- Exy[((nx+ny+1):ncol(Exy)),(nx+ny+1):ncol(Exy)]
-# Sig12 <- Exy[(1:ny),(nx+ny+1):ncol(Exy)]
-# 
-# PG[ii,jj,bss] <- log(det(S11-S12%*%solve(S22)%*%S12) / det(Sig11-Sig12%*%solve(Sig22)%*%Sig12))-out$orig[ii,jj]
-# 
-# Xj <- rbind(XX[jj,],XX[ii,],XX[-c(ii,jj),])
-# Xjr <- Xj[-((nx+1):(nx+ny)),] 
-# Exy<-armorf(t(Xj),nwin,b,order)
-# Ey<-armorf(t(Xjr),nwin,b,order)
-# 
-# S11 <- Ey[1:ny,1:ny]
-# S22 <- Ey[(ny+1):ncol(Ey),(ny+1):ncol(Ey)]
-# S12 <- Ey[1:ny,(ny+1):ncol(Ey)]
-# 
-# Sig11 <- Exy[(1:ny),(1:ny)]
-# Sig22 <- Exy[((nx+ny+1):ncol(Exy)),(nx+ny+1):ncol(Exy)]
-# Sig12 <- Exy[(1:ny),(nx+ny+1):ncol(Exy)]
-# 
-# PG[jj,ii,bss] <- log(det(S11-S12%*%solve(S22)%*%S12) / det(Sig11-Sig12%*%solve(Sig22)%*%Sig12))-out$orig[jj,ii]
-# 
+# Xi <- t(rbind(XX[ii,],XX[jj,],XX[-c(ii,jj),]))
+# cg[ii,jj,bss]=  partGranger(Xi,nx=nx,ny=nx,order=order)$orig
+# Xj <- t(rbind(XX[jj,],XX[ii,],XX[-c(ii,jj),]))
+# cg[jj,ii,bss]=  partGranger(Xj,nx=nx,ny=nx,order=order)$orig
 # }}
 # }
-# 
 # for(ii in 1:(l-1)) {
 # for (jj in (ii+1):l){
-# if (quantile(PG[ii,jj,],1-p/ncol(data)/2)>out$orig[ii,jj])
-# {out$prob[ii,jj]=0} else {out$prob[ii,jj]=1}
+# #if (quantile(cg[ii,jj,],1-p/(ncol(data)^2-ncol(data)))>out$orig[ii,jj])
+# #{out$prb[jj,ii]=0} else {out$prb[jj,ii]=1}
 # 
-# if (quantile(PG[jj,ii,],1-p/ncol(data)/2)>out$orig[jj,ii])
-# {out$prob[jj,ii]=0} else {out$prob[jj,ii]=1}
+# #if (quantile(cg[jj,ii,],1-p/(ncol(data)^2-ncol(data)))>out$orig[jj,ii])
+# #{out$prb[ii,jj]=0} else {out$prb[ii,jj]=1}
+# 
+# out$prob[ii,jj] <- length(cg[ii,jj,][cg[ii,jj,]>=out$orig[ii,jj]])/length(cg[ii,jj,])
+# out$prob[jj,ii] <- length(cg[jj,ii,][cg[jj,ii,]>=out$orig[jj,ii]])/length(cg[jj,ii,])
 # 
 # }}
+# #if(out$prb==numeric(0)){out$prb<-0}
+# out
 # }
-#out
+# 
+# else{
+l <- ncol(data)
+r <- nrow(data)
+out<-list()
+cg <- matrix(0,bs,1)
+ll <- b.star(data,round=TRUE)[,1]
+
+
+for (bss in 1:bs){
+XX  <- matrix(0,l,r) 
+  for (pp in 1:l){
+
+    nwin<- floor(r/ll[pp])
+    temp<- sample(nwin)
+    inx <- rep(temp,each=ll[pp])
+    data_ind <- cbind(inx,data[1:(ll[pp]*nwin),pp])
+    XX[pp,1:(ll[pp]*nwin)] <- data_ind[order(data_ind[,1]),-1]
+
+                }
+  XX <- XX[,1:max(which(apply(XX,2,prod)!=0))]
+
+if (bss==1){
+out$orig  <- partGranger(data,nx=nx,ny=ny,order=order)$orig
+           }
+cg[bss,]    <- partGranger(t(XX),nx=nx,ny=ny,order=order)$orig
+
 }
+#if (quantile(cg,1-p/(ncol(data)^2-ncol(data)))>out$orig)
+#{out$prb=0} else {out$prb=1}
+out$prob <- length(cg[cg>=out$orig])/length(cg)
+out
+}
+}
+#}
+

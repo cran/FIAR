@@ -15,3 +15,4 @@ export(
        "dcmGenerate",
        "SEMextract"
       )
+useDynLib("FIAR")

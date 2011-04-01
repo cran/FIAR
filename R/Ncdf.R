@@ -1,6 +1,6 @@
 Ncdf<-function(u,v){
 x=0
-u=as.matrix(u)
+u=as.matrix(abs(u))
 v=as.matrix(v)
 ad=as.matrix(c(2,2,2))
 rd=max(ad)

@@ -14,7 +14,7 @@ while (spm_eigen(tcrossprod(fx))[NROW(fx)] > 1e-16){
 
 	#(eigen2(tcrossprod(x))$values[1] > 1e16){
 	(spm_eigen(tcrossprod(x))[NROW(x)] > 1e16){
-	x <- spm_expm1((J))*x0}
+	x <- spm_expm1((J))%*%x0}
 	}
     x 
     }

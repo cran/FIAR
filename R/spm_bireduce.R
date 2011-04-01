@@ -71,7 +71,7 @@ function(PM,x,n,m,TE){
     bireduce<-list()
     bireduce$M0 <- M0
     bireduce$M1 <- M1
-#     bireduce$L1 <- L1
+    bireduce$L1 <- L1
     bireduce
     }
 

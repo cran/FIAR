@@ -21,10 +21,14 @@ function(PM,DCM){
 	J <- J+u[j]*M1[,,j]
                       }
 	               }
-	  else{y[,DCM$s[i]] <- funl2(x_exp[2:length(x_exp)], PM,DCM$n,DCM$TE)}
+	  else{y[,DCM$s[i]] <- funl2(x_exp[2:length(x_exp)], PM,DCM$n,DCM$TE)
+                  #ns <- logical()               
+                  #ns <- cbind(ns,x_exp)
+}
 	
 	  
       x_exp <- spm_expm2((J*DCM$dt0[i]),x_exp)
+      
       }
      
    t(y)

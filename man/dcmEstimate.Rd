@@ -27,9 +27,10 @@ every input [,,k].}
 \author{Bjorn Roelstraete}
 \seealso{dcmGenerate}
 \examples{
+# Not run
 # Estimate posterior parameters of model DCMex with data DCMex$sim
- ts <-  dcmGenerate(DCMex, SNR=1, ar=.2, names=c('V1','V2','V3'))
- DCMex <- dcmEstimate(DCMex, ts)
+# ts <-  dcmGenerate(DCMex, SNR=1, ar=.2, names=c('V1','V2','V3'))
+# DCMex <- dcmEstimate(DCMex, ts)
 
 #Posterior anatomical connections
  DCMex$A

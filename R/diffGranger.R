@@ -1,81 +1,106 @@
 diffGranger <-
-function(data,nx=1,ny=1,order=1,boot=FALSE,bs=100, p=.05){
+function(data,nx=1,ny=1,order=1,perm=FALSE,bs=100){
 data <- as.matrix(data)
 X <- t(data)
 X <- X-rowMeans(X)
 data <- t(X)
 
-if (boot == FALSE){
-x <- as.matrix(data[,1:nx])
+  if (perm == FALSE){
+     x <- as.matrix(data[,1:nx])
 
-y <- as.matrix(data[,-(1:nx)][,1:ny])
+     y <- as.matrix(data[,-(1:nx)])[,1:ny]
 
-if (sum(as.matrix(data[,-(1:(nx+ny))]))!=0)
-{
-
-z <- as.matrix(data[,-(1:(nx+ny))])
-nz <- ncol(z)
+       if (sum(as.matrix(data[,-(1:(nx+ny))]))!=0)
+         {
+           z <- as.matrix(data[,-(1:(nx+ny))])
+           nz <- ncol(z)
 
 # Compute F2
 
-x  <-  embed(x,order+1)
-x2 <- as.matrix(x[,1:nx])
-xlag <- as.matrix(x[,-(1:nx)])
+                x  <-  embed(x,order+1)
+                x2 <- as.matrix(x[,1:nx])
+                xlag <- as.matrix(x[,-(1:nx)])
 
-y  <-  embed(y,order+1)
-y2 <- as.matrix(y[,1:ny])
-ylag <- as.matrix(y[,-(1:ny)])
+                y  <-  embed(y,order+1)
+                y2 <- as.matrix(y[,1:ny])
+                ylag <- as.matrix(y[,-(1:ny)])
 
-z  <-  embed(z,order+1)
-z2 <- as.matrix(z[,1:nz])
-zlag <- as.matrix(z[,-(1:nz)])
-
-e1 = cov(y2)-cov(y2,cbind(ylag,zlag))%*%solve(cov(cbind(ylag,zlag)))%*%cov(cbind(ylag,zlag),y2)
-e2 = cov(y2)-cov(y2,cbind(ylag,xlag,zlag))%*%solve(cov(cbind(ylag,xlag,zlag)))%*%cov(cbind(ylag,xlag,zlag),y2)
-
-Fxy = log(det(e1)/det(e2))
-
-e1 = cov(x2)-cov(x2,cbind(xlag,zlag))%*%solve(cov(cbind(xlag,zlag)))%*%cov(cbind(xlag,zlag),x2)
-e2 = cov(x2)-cov(x2,cbind(xlag,ylag,zlag))%*%solve(cov(cbind(xlag,ylag,zlag)))%*%cov(cbind(xlag,ylag,zlag),x2)
-
-Fyx = log(det(e1)/det(e2))
-
-	
-      F <- Fxy - Fyx
-      F
- }
- else{
-x  <-  embed(x,order+1)
-x2 <- as.matrix(x[,1:nx])
-xlag <- as.matrix(x[,-(1:nx)])
-
-y  <-  embed(y,order+1)
-y2 <- as.matrix(y[,1:ny])
-ylag <- as.matrix(y[,-(1:ny)])
+                z  <-  embed(z,order+1)
+                z2 <- as.matrix(z[,1:nz])
+                zlag <- as.matrix(z[,-(1:nz)])
 
 
-e1 = cov(y2)-cov(y2,ylag)%*%solve(cov(ylag))%*%cov(ylag,y2)
-e2 = cov(y2)-cov(y2,cbind(ylag,xlag))%*%solve(cov(cbind(ylag,xlag)))%*%cov(cbind(ylag,xlag),y2)
+	    fitF <-lm(y2~cbind(ylag,zlag,xlag))
+	    fitR <- lm(y2~cbind(ylag,zlag))
+	    SSER <- sum(fitR$res^2)
+	    SSEF <- sum(fitF$res^2)
+            fxy <- log(SSER/SSEF) 
+            fitF <-lm(x2~cbind(ylag,zlag,xlag))
+	    fitR <- lm(x2~cbind(xlag,zlag))
+	    SSER <- sum(fitR$res^2)
+	    SSEF <- sum(fitF$res^2)
+            fyx <- log(SSER/SSEF) 
+	    Fdiff <- fxy-fyx
+            Fdiff
+	    }
+		  else{
+		  x  <-  embed(x,order+1)
+		  x2 <- as.matrix(x[,1:nx])
+		  xlag <- as.matrix(x[,-(1:nx)])
 
-Fxy = log(det(e1)/det(e2))
+		  y  <-  embed(y,order+1)
+		  y2 <- as.matrix(y[,1:ny])
+		  ylag <- as.matrix(y[,-(1:ny)])
 
-e1 = cov(x2)-cov(x2,xlag)%*%solve(cov(xlag))%*%cov(xlag,x2)
-e2 = cov(x2)-cov(x2,cbind(xlag,ylag))%*%solve(cov(cbind(xlag,ylag)))%*%cov(cbind(xlag,ylag),x2)
+		  fitF <-lm(y2~cbind(ylag,xlag))
+		  fitR <- lm(y2~cbind(ylag))
+		  SSER <- sum(fitR$res^2)
+		  SSEF <- sum(fitF$res^2)
+		  fxy <- log(SSER/SSEF) 
+		  fitF <-lm(x2~cbind(ylag,xlag))
+		  fitR <- lm(x2~cbind(xlag))
+		  SSER <- sum(fitR$res^2)
+		  SSEF <- sum(fitF$res^2)
+		  fyx <- log(SSER/SSEF) 
+                  Fdiff <- fxy-fyx
+                  Fdiff	      
+		  }
+                          }
 
-Fyx = log(det(e1)/det(e2))
 
-	
-      F <- Fxy - Fyx
-      F
+else{
+l <- ncol(data)
+r <- nrow(data)
+out<-list()
+cg <- matrix(0,bs,1)
+ll <- b.star(data,round=TRUE)[,1]
+
+
+for (bss in 1:bs){
+XX  <- matrix(0,l,r) 
+  for (pp in 1:l){
+
+    nwin<- floor(r/ll[pp])
+    temp<- sample(nwin)
+    inx <- rep(temp,each=ll[pp])
+    data_ind <- cbind(inx,data[1:(ll[pp]*nwin),pp])
+    XX[pp,1:(ll[pp]*nwin)] <- data_ind[order(data_ind[,1]),-1]
+
+                }
+  XX <- XX[,1:max(which(apply(XX,2,prod)!=0))]
+
+if (bss==1){
+out$orig  <- diffGranger(data,nx=nx,ny=ny,order=order)
+           }
+cg[bss,]    <- diffGranger(t(XX),nx=nx,ny=ny,order=order)
+
 }
-} 
- 
- else{
- l <- median(b.star(data,round=TRUE)[,1]) # package {np}
- out <- tsboot(data,diffGranger,R=bs, l=l, sim ='geom',nx=nx,ny=ny,order=order) # package {boot}
- if(quantile(out$t-out$t0,1-p/ncol(data)/2)>out$t0){
-out$sig=0} else {out$sig=1}
- out} 
-
+#if (quantile(cg,1-p/(ncol(data)^2-ncol(data)))>out$orig)
+#{out$prb=0} else {out$prb=1}
+if(out$orig>0){
+out$prob <- length(cg[cg>=out$orig])/length(cg)}
+if(out$orig<0){
+out$prob <- length(cg[cg<=out$orig])/length(cg)}
+out
 }
-
+}
