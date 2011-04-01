@@ -1,0 +1,17 @@
+# export functions defined in this package
+import('Matrix')
+export(
+       "ARorder",
+       "dcmParam",
+       "partGranger", 
+       "dcmEstimate",
+       "ARsem",
+       "diffGranger",
+       "pdiffGranger",
+       "dcmEvidence",
+       "condGranger",
+       "hrfConvolve", 
+       "dcmCompare",
+       "dcmGenerate",
+       "SEMextract"
+      )
