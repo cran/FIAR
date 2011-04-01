@@ -1,6 +1,10 @@
 diffGranger <-
-function(data,nx=1,ny=1,order=1,boot=FALSE,bs=100){
+function(data,nx=1,ny=1,order=1,boot=FALSE,bs=100, p=.05){
 data <- as.matrix(data)
+X <- t(data)
+X <- X-rowMeans(X)
+data <- t(X)
+
 if (boot == FALSE){
 x <- as.matrix(data[,1:nx])
 
@@ -68,8 +72,8 @@ Fyx = log(det(e1)/det(e2))
  
  else{
  l <- median(b.star(data,round=TRUE)[,1]) # package {np}
- out <- tsboot(data,diffGranger,R=bs, l=l, sim ='fixed',nx=nx,ny=ny,order=order) # package {boot}
- if (out$t0  > mean(out$t)-2*apply(out$t,2,sd) & out$t0  < mean(out$t)+2*apply(out$t,2,sd)){
+ out <- tsboot(data,diffGranger,R=bs, l=l, sim ='geom',nx=nx,ny=ny,order=order) # package {boot}
+ if(quantile(out$t-out$t0,1-p/ncol(data)/2)>out$t0){
 out$sig=0} else {out$sig=1}
  out} 
 

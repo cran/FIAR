@@ -6,7 +6,7 @@
 \description{Compute conditional granger causality of multivariate timeseries.
 }
 \usage{
-condGranger(data, nx = 1, ny = 1, order=1, boot = FALSE, bs = 100)
+condGranger(data, nx = 1, ny = 1, order=1, boot = FALSE, prob=TRUE, bs = 100, p=.05)
 }
 \arguments{
   \item{data}{object containing all observations (rows) and variables (columns)
@@ -28,7 +28,11 @@ measure is produced. If boot = TRUE, the granger test is computed and a
 bootstrap is performed to generate the H0 distribution (based on function
 tsboot() from the package boot).
 }
-  \item{bs}{Number of bootstrap samples. Only works when p = TRUE. Default=100
+\item{bs}{Number of bootstrap samples. Only works when boot = TRUE. Default=100
+}
+\item{prob}{Logical. If TRUE, the F statistic is returned together with the p-value.
+}
+\item{p}{Uncorrected threshold for significance. This threshold gets Bonferroni corrected.
 }
 }
 \value{Conditional Granger causality F statistic with p-value.}

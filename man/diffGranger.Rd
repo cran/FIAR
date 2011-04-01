@@ -6,7 +6,7 @@
 multivariate timeseries. 
 }
 \usage{
-diffGranger(data, nx = 1, ny = 1, order=1, boot = FALSE, bs = 100)
+diffGranger(data, nx = 1, ny = 1, order=1, boot = FALSE, bs = 100, p= .05)
 }
 \arguments{
   \item{data}{object containing all observations (rows) and variables (columns)
@@ -29,8 +29,10 @@ measure is produced. If boot = TRUE, the granger test is performed and a
 bootstrap is performed to generate the H0 distribution (based on function
 tsboot() from the package boot).
 }
-  \item{bs}{Number of bootstrap samples (Default=100). Only works when p =
+  \item{bs}{Number of bootstrap samples (Default=100). Only works when boot =
 TRUE.
+}
+\item{p}{Uncorrected threshold for significance. This threshold gets Bonferroni corrected.
 }
 }
 \details{The total linear dependence between X and Y can be divided in three

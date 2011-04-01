@@ -5,7 +5,7 @@
 \description{Compute AIC of a series of Multivariate AR models and returns the order of the model which minimizes this AIC.
 }
 \usage{
-ARorder(data, min=1,max = 100,type='AIC')
+ARorder(data, min=1,max = 10,type='AIC')
 }
 \arguments{
   \item{data}{timeseries to compute autoregressive order of.

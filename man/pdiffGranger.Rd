@@ -6,7 +6,7 @@
 multivariate timeseries.
 }
 \usage{
-pdiffGranger(data, nx = 1, ny = 1, order=1, boot = FALSE, bs = 100)
+pdiffGranger(data, nx = 1, ny = 1, order=1, boot = FALSE, bs = 100, p=.05)
 }
 \arguments{
   \item{data}{object containing all observations (rows) and variables (columns)
@@ -32,6 +32,8 @@ bootstrap is performed to generate the H0 distribution (based on function
 tsboot()) from the package {boot}.
 }
   \item{bs}{Number of bootstrap samples. Only works when p = TRUE. Default=100
+}
+\item{p}{Uncorrected threshold for significance. This threshold gets Bonferroni corrected.
 }
 }
 \details{The total linear dependence between X and Y can be divided in three

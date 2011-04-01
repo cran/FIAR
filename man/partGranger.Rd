@@ -5,7 +5,7 @@
 \description{Compute partial Granger causality of multivariate timeseries.
 }
 \usage{
-partGranger(data, nx = 1, ny = 1, order=1, boot = FALSE, bs = 100,b=NA,p=.05)
+partGranger(data, nx = 1, ny = 1, order=1, boot = FALSE, prob=TRUE, bs = 100,p=.05)
 }
 \arguments{
   \item{data}{object containing all observations (rows) and variables (columns)
@@ -27,9 +27,9 @@ ARorder().
 measure is produced. If boot = TRUE, the granger test is computed and a
 bootstrap is performed to do inference.
 }
-  \item{bs}{Number of bootstrap samples. Only works when p = TRUE. Default=100
+\item{prob}{Logical. If TRUE, the F statistic is returned together with the p-value.
 }
-\item{b}{Windowsize. Only works when boot = TRUE.
+  \item{bs}{Number of bootstrap samples. Only works when boot = TRUE. Default=100
 }
 \item{p}{Uncorrected threshold for significance. This threshold gets Bonferroni corrected.
 }
@@ -53,7 +53,7 @@ ARorder(grangerdata, max=10)
 F <- partGranger(grangerdata, nx=1, ny=2, order=3)
 
 # Compute F and bootstrap H0 distribution
-F <- partGranger(grangerdata, nx=1, ny=2, order=3, boot=TRUE,bs=10,b=10)
+F <- partGranger(grangerdata, nx=1, ny=2, order=3, boot=TRUE,bs=10)
 }
 \keyword{ ~Granger }
 \keyword{ ~parial }
