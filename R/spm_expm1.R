@@ -1,6 +1,6 @@
 spm_expm1 <-
 function(J){
-    e= frexp(norm(J,'I'))[2]
+    e= frexp(norm(J,'I'))
     s     = max(0,e+1);
     J <- (J)/2^s
     X <- J

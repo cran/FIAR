@@ -1,16 +1,16 @@
 Package: FIAR
 Type: Package
 Title: Functional Integration Analysis in R
-Version: 0.5
-Date: 2011-04-01
-Author: Bjorn Roelstraete
-Maintainer: Bjorn Roelstraete <Bjorn.Roelstraete@ugent.be>
-Description: Contains DCM, (autoregressive) SEM, and multivariate
-        Granger causality tests for analyzing fMRI connectivity data.
-Depends: R (>= 2.11.1),lavaan(>= 0.4-7),Matrix,np
+Version: 0.6
+Author: Bjorn Roelstraete 
+Maintainer: Bjorn Roelstraete  <Bjornroelstraete@gmail.com>
+Description: Contains Dynamic Causal Models (DCM), Autoregressive Structural Equation Models (ARSEM), and multivariate partial and conditional Granger causality tests for analysing fMRI connectivity data.
+Depends: lavaan, Matrix, np
 License: GPL-2
-LazyLoad: yes
-LazyData: yes
-Packaged: 2012-07-06 11:23:43 UTC; bjorn
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+NeedsCompilation: yes
+Packaged: 2018-06-05 09:44:52 UTC; Bjorn
 Repository: CRAN
-Date/Publication: 2012-07-06 12:20:35
+Date/Publication: 2018-06-05 11:48:21 UTC

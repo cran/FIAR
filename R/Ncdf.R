@@ -1,3 +1,4 @@
+
 Ncdf<-function(u,v){
 x=0
 u=as.matrix(abs(u))

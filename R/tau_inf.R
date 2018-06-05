@@ -1,3 +1,4 @@
+
 tau_inf <-
 function(data,p=.05,bin=0){
 

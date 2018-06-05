@@ -1,3 +1,4 @@
+#' @export
 SEMextract<-function(ts,ons,dur,TR){
 semts <- numeric()
 for (l in 1:length(ons)){

@@ -1,3 +1,4 @@
+
 spm_int1 <-
 function(DCM){
        x_exp <- rbind(1,as.matrix(rep(0,DCM$x)))

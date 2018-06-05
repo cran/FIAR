@@ -1,3 +1,4 @@
+
 funx <-
 function(x,u0=0,PM,n,m){
     q <- exp(PM[1])
@@ -17,7 +18,7 @@ C0 <- matrix(PM[j],n,m)
 PM <- PM[-j]
 H0 <- matrix(PM,nrow=n)
 
-	
+
 	for(i in 1:m){
 	A0 <- A0+u0[i]*B0[,,i]}
     x <- matrix(x,nrow=n)

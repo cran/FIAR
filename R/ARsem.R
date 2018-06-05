@@ -1,3 +1,4 @@
+#' @export
 ARsem <-
 function (model,data,order=0){
 
@@ -18,7 +19,7 @@ upper.triangle <- function (x)
 	v.names <- rep(colnames(data), (order+1))
 	prefix  <- rep(0:order, each=nvar)
 	colnames(data.lagged) <- paste(v.names, prefix, sep="_")
-    
+
     # create AR matrix
 	model <- t(matrix(model,nvar))
 	#if(any(rowSums(model)==0)) stop('Some variables in data are not part of the model')
@@ -31,24 +32,24 @@ upper.triangle <- function (x)
 
 	regr <- logical(0)
 	  for (i in 1:nrow(M)){
-	    
+
 	    for (j in 1:ncol(M)){
-	      
+
 	      ifelse(M[i,j] == 1, r <- paste(rownames(M)[i], '~', colnames(M)[j], '\n', sep= ' '), r <- logical(0))
-	  
+
 	         regr<-c(regr,r)
-	            
-		    
+
+
 				}
 			      }
-	    regr <- paste(regr,collapse=" ")#regr	 
+	    regr <- paste(regr,collapse=" ")#regr
 
             # merge for lavaan 0.3-1
            # regr <- lavaan3_merge(regr)
-             
+
 	   # regr
 	    fit <- sem(regr,data=as.data.frame(data.lagged)) # Warning blijft verschijnen
-	    
-	    fit	  
+
+	    fit
                   }
 

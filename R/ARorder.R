@@ -1,7 +1,10 @@
-ARorder <- function (data, min = 1, max = 10,type='AIC') 
+#' @importFrom stats anova as.formula convolve cov embed fft lm median pnorm cov var
+#' @export
+
+ARorder <- function (data, min = 1, max = 10,type='AIC')
 {
 if (type=='AIC'){
-   
+
  AIC <- rep(Inf, max)
     d <- as.matrix(data)
     N <- NCOL(d)
@@ -14,7 +17,7 @@ if (type=='AIC'){
 		AIC[i] <- log(det(cov(fit$res))) + 2 * N^2 * i/NROW(d)
 	                          }
     orr <- which(AIC == min(AIC[abs(AIC) != Inf]))
-    
+
                   }
         else{
 	      for (i in min:max) {
@@ -25,9 +28,9 @@ if (type=='AIC'){
 		AIC[i] <- log(var(fit$res)) + 2 * N^2 * i/NROW(d)
 	      }
              orr <- which(AIC == min(AIC[abs(AIC) != Inf]))
-    
+
              }
-} 
+}
 if (type=='BIC'){
 BIC <- rep(Inf,max)
     d <- as.matrix(data)
@@ -41,7 +44,7 @@ BIC <- rep(Inf,max)
              BIC[i] <- log(det(cov(fit$res)))+log(NROW(d))*N^2*i/NROW(d)
                              }
           orr <- which(BIC==min(BIC[abs(BIC)!=Inf]))
-    
+
                  }
 
 	else{

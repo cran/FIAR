@@ -1,3 +1,4 @@
+#' @export
 diffGranger <-
 function(data,nx=1,ny=1,order=1,perm=FALSE,bs=100){
 data <- as.matrix(data)
@@ -34,12 +35,12 @@ data <- t(X)
 	    fitR <- lm(y2~cbind(ylag,zlag))
 	    SSER <- sum(fitR$res^2)
 	    SSEF <- sum(fitF$res^2)
-            fxy <- log(SSER/SSEF) 
+            fxy <- log(SSER/SSEF)
             fitF <-lm(x2~cbind(ylag,zlag,xlag))
 	    fitR <- lm(x2~cbind(xlag,zlag))
 	    SSER <- sum(fitR$res^2)
 	    SSEF <- sum(fitF$res^2)
-            fyx <- log(SSER/SSEF) 
+            fyx <- log(SSER/SSEF)
 	    Fdiff <- fxy-fyx
             Fdiff
 	    }
@@ -56,14 +57,14 @@ data <- t(X)
 		  fitR <- lm(y2~cbind(ylag))
 		  SSER <- sum(fitR$res^2)
 		  SSEF <- sum(fitF$res^2)
-		  fxy <- log(SSER/SSEF) 
+		  fxy <- log(SSER/SSEF)
 		  fitF <-lm(x2~cbind(ylag,xlag))
 		  fitR <- lm(x2~cbind(xlag))
 		  SSER <- sum(fitR$res^2)
 		  SSEF <- sum(fitF$res^2)
-		  fyx <- log(SSER/SSEF) 
+		  fyx <- log(SSER/SSEF)
                   Fdiff <- fxy-fyx
-                  Fdiff	      
+                  Fdiff
 		  }
                           }
 
@@ -77,7 +78,7 @@ ll <- b.star(data,round=TRUE)[,1]
 
 
 for (bss in 1:bs){
-XX  <- matrix(0,l,r) 
+XX  <- matrix(0,l,r)
   for (pp in 1:l){
 
     nwin<- floor(r/ll[pp])

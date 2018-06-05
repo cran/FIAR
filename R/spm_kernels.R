@@ -1,3 +1,4 @@
+
 spm_kernels <- function(DCM){
 
 bireduce<-spm_bireduce(DCM$Ep,DCM$x,DCM$n,DCM$m,DCM$TE)

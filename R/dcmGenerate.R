@@ -1,8 +1,9 @@
+#' @export
 dcmGenerate <-
 function(DCM=DCM,SNR=0,ar=0,names=DCM$names){
     PM <- spm_PM(DCM$a,DCM$b,DCM$c,DCM$h,DCM$n,DCM$m)
     #X0 <- HPF(DCM)
-    DCM<-stimfun(DCM) 
+    DCM<-stimfun(DCM)
     y <- spm_int(PM,DCM)
     y <- t(y)
       # add noise
@@ -16,18 +17,18 @@ function(DCM=DCM,SNR=0,ar=0,names=DCM$names){
     K=solve(a)
     K=K*sqrt(DCM$v/sum(diag(tcrossprod(K))))
     z=matrix(rnorm(DCM$n*DCM$v),DCM$v,DCM$n)
-    
+
     e=K%*%z
     y=y+t(e%*%r)
 	    }
 
     y <- t(y)
-   
+
 #	Now orthogonalise data with respect to effects of no interest
 #   If X0 is just a vector of 1s this amounts to making the data zero mean
-	
-	X0 <- rep(1,DCM$v) 
-	
+
+	X0 <- rep(1,DCM$v)
+
 	Xp  <- tcrossprod((X0%*%solve(crossprod(X0))),X0)
 
 	for (i in 1:DCM$n){
